@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Favorites - Bookaroo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #fafafa;
+            color: #2c3e50;
+        }
+
+        nav {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 1.2rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        nav .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: rgba(255,255,255,0.9);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #fff;
+        }
+
+        .favorites-hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        .favorites-hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .favorites-hero p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+        }
+
+        .favorites-count {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.5rem 1.5rem;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50px;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .filter-bar {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 2rem;
+        }
+
+        .clear-all-btn {
+            padding: 0.6rem 1.5rem;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .clear-all-btn:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        .favorites-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 2rem;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .favorite-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .favorite-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.2);
+        }
+
+        .favorite-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255,255,255,0.95);
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            z-index: 10;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .book-image {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .book-info {
+            padding: 1.5rem;
+        }
+
+        .book-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+        }
+
+        .book-author {
+            font-size: 0.95rem;
+            color: #7f8c8d;
+            font-style: italic;
+            margin-bottom: 1rem;
+        }
+
+        .book-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 0.7rem;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .remove-btn {
+            background: #ffe5e5;
+            color: #e74c3c;
+        }
+
+        .remove-btn:hover {
+            background: #e74c3c;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .empty-state-icon {
+            font-size: 5rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state h2 {
+            font-size: 2rem;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state p {
+            font-size: 1.1rem;
+            color: #7f8c8d;
+            margin-bottom: 2rem;
+        }
+
+        .empty-state .btn {
+            padding: 1rem 2.5rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+
+        .empty-state .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .favorites-hero h1 {
+                font-size: 1.8rem;
+            }
+
+            .favorites-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <a href="/" class="brand">📚 Bookaroo</a>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/recommendation">Discover</a></li>
+                <li><a href="/favorites" class="active">My Favorites</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="favorites-hero">
+        <h1>💜 My Favorite Books</h1>
+        <p>Your personal collection of loved books</p>
+        <div class="favorites-count" id="favCount">0 Books Saved</div>
+    </section>
+
+    <div class="container">
+        <div class="filter-bar" id="filterBar" style="display: none;">
+            <button class="clear-all-btn" onclick="clearAllFavorites()">Clear All</button>
+        </div>
+
+        <div class="favorites-grid" id="favoritesGrid"></div>
+
+        <div class="empty-state" id="emptyState">
+            <div class="empty-state-icon">📚</div>
+            <h2>No Favorites Yet</h2>
+            <p>Start building your collection by exploring books and adding them to your favorites</p>
+            <a href="/recommendation" class="btn">Discover Books</a>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Bookaroo. Discover books, expand your mind.</p>
+    </footer>
+
+    <script>
+        // Get favorites from memory storage
+        let favorites = [];
+
+        // Load favorites when page loads
+        window.addEventListener('DOMContentLoaded', function() {
+            loadFavorites();
+            displayFavorites();
+        });
+
+        function loadFavorites() {
+            // Try to get favorites from memory (simulating storage)
+            const stored = window.favoritesData || [];
+            favorites = stored;
+        }
+
+        function displayFavorites() {
+            const grid = document.getElementById('favoritesGrid');
+            const emptyState = document.getElementById('emptyState');
+            const filterBar = document.getElementById('filterBar');
+            const favCount = document.getElementById('favCount');
+
+            if (favorites.length === 0) {
+                grid.style.display = 'none';
+                emptyState.style.display = 'block';
+                filterBar.style.display = 'none';
+                favCount.textContent = '0 Books Saved';
+            } else {
+                grid.style.display = 'grid';
+                emptyState.style.display = 'none';
+                filterBar.style.display = 'flex';
+                favCount.textContent = `${favorites.length} Book${favorites.length !== 1 ? 's' : ''} Saved`;
+
+                grid.innerHTML = favorites.map((book, index) => `
+                    <div class="favorite-card">
+                        <div class="favorite-badge">💜 Favorite</div>
+                        <img src="${book.image}" alt="${book.title}" class="book-image" 
+                             onerror="this.src='https://via.placeholder.com/220x280?text=Book+Cover'">
+                        <div class="book-info">
+                            <h3 class="book-title">${book.title}</h3>
+                            <p class="book-author">${book.author}</p>
+                            <div class="book-actions">
+                                <button class="action-btn remove-btn" onclick="removeFavorite(${index})">
+                                    🗑️ Remove
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function removeFavorite(index) {
+            if (confirm('Remove this book from favorites?')) {
+                favorites.splice(index, 1);
+                window.favoritesData = favorites;
+                displayFavorites();
+            }
+        }
+
+        function clearAllFavorites() {
+            if (confirm('Are you sure you want to clear all favorites? This cannot be undone.')) {
+                favorites = [];
+                window.favoritesData = [];
+                displayFavorites();
+            }
+        }
+    </script>
+</body>
+</html>

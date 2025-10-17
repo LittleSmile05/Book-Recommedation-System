@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bookaroo - Book Recommendations</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* CSS is unchanged, so it's hidden for brevity. Your existing styles are fine. */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #fafafa; color: #2c3e50; line-height: 1.6; }
+        nav { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 1.2rem 2rem; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        nav .container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .brand { font-size: 1.8rem; font-weight: 700; color: white; text-decoration: none; letter-spacing: -0.5px; }
+        .nav-links { display: flex; gap: 2rem; list-style: none; }
+        .nav-links a { color: rgba(255,255,255,0.9); text-decoration: none; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover { color: #fff; }
+        .nav-item-fav-count { background: #ff4757; color: white; border-radius: 50%; padding: 0.1em 0.5em; font-size: 0.8rem; margin-left: 5px; font-weight: bold; }
+        .hero { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 4rem 2rem; text-align: center; position: relative; overflow: hidden; }
+        .hero::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(255,255,255,0.1)" fill-opacity="1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,144C960,149,1056,139,1152,133.3C1248,128,1344,128,1392,128L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>'); background-repeat: no-repeat; background-size: cover; }
+        .hero-content { max-width: 800px; margin: 0 auto; position: relative; z-index: 1; animation: slideUp 0.8s ease-out; }
+        .hero h1 { font-size: 3.5rem; margin-bottom: 1rem; font-weight: 700; line-height: 1.2; }
+        .hero p { font-size: 1.3rem; margin-bottom: 2rem; opacity: 0.95; font-weight: 300; }
+        .hero-buttons { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+        .btn { padding: 0.9rem 2rem; border: none; border-radius: 50px; font-weight: 600; cursor: pointer; transition: all 0.3s; text-decoration: none; display: inline-block; font-size: 1rem; }
+        .btn-primary { background: white; color: #667eea; }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        .btn-secondary { background: rgba(255,255,255,0.2); color: white; border: 2px solid white; }
+        .btn-secondary:hover { background: white; color: #667eea; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+        .section-title { text-align: center; font-size: 2.5rem; margin: 3rem 0 2rem; font-weight: 700; color: #2c3e50; }
+        .section-title::after { content: ''; display: block; width: 80px; height: 4px; background: linear-gradient(90deg, #667eea, #764ba2); margin: 1rem auto; border-radius: 2px; }
+        .books-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 2rem; padding: 2rem 0; animation: fadeIn 0.6s ease-out; }
+        .book-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.08); transition: all 0.3s; cursor: pointer; position: relative; height: 100%; display: flex; flex-direction: column; }
+        .book-card:hover { transform: translateY(-8px); box-shadow: 0 15px 40px rgba(102, 126, 234, 0.2); }
+        .book-image { width: 100%; height: 250px; object-fit: cover; background: #f0f0f0; }
+        .book-info { padding: 1.2rem; flex-grow: 1; display: flex; flex-direction: column; }
+        .book-title { font-weight: 700; font-size: 1rem; color: #2c3e50; margin-bottom: 0.5rem; line-height: 1.3; }
+        .book-author { font-size: 0.85rem; color: #7f8c8d; margin-bottom: 0.8rem; font-style: italic; }
+        .book-rating { display: flex; justify-content: space-between; font-size: 0.85rem; color: #95a5a6; margin-top: auto; }
+        .book-actions { display: flex; gap: 0.5rem; margin-top: 1rem; }
+        .like-btn { flex: 1; padding: 0.6rem; background: #ecf0f1; border: none; border-radius: 6px; cursor: pointer; font-size: 1.2rem; transition: all 0.3s; }
+        .like-btn:hover { transform: scale(1.05); }
+        .like-btn.liked { background: linear-gradient(135deg, #ff7979, #ff4757); color: white; }
+        .load-more-section { text-align: center; padding: 3rem 0; }
+        .btn-load-more { padding: 1rem 3rem; background: linear-gradient(135deg, #667eea, #764ba2); color: white; font-size: 1rem; }
+        .btn-load-more:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3); }
+        .btn-load-more:disabled { background: #bdc3c7; cursor: not-allowed; box-shadow: none; transform: none; }
+        footer { background: #2c3e50; color: white; text-align: center; padding: 2rem; margin-top: 4rem; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 200; display: none; align-items: center; justify-content: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: #fafafa; padding: 2rem; border-radius: 15px; width: 90%; max-width: 1000px; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.2); position: relative; animation: slideUp 0.5s ease-out; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid #e0e0e0; }
+        .modal-title { font-size: 2rem; color: #2c3e50; }
+        .close-btn { font-size: 2.5rem; color: #95a5a6; cursor: pointer; border: none; background: none; transition: color 0.3s; }
+        .close-btn:hover { color: #2c3e50; }
+        #emptyFavorites { text-align: center; padding: 3rem; color: #7f8c8d; display: none; }
+        #emptyFavorites p { font-size: 1.2rem; }
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2rem; } .hero p { font-size: 1rem; } .hero-buttons { flex-direction: column; } .btn { width: 100%; } .nav-links { gap: 1rem; } .books-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <a href="#" class="brand">📚 Bookaroo</a>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/recommendation">Discover</a></li>
+                <li><a href="#" onclick="showFavorites(); return false;">My Favorites <span id="favCount" class="nav-item-fav-count">0</span></a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Discover Your Next Great Read</h1>
+            <p>Explore curated book recommendations tailored to your taste</p>
+            <div class="hero-buttons">
+                <a href="/recommendation" class="btn btn-primary">Start Exploring</a>
+                <a href="#books" class="btn btn-secondary">Browse Popular</a>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        <h2 class="section-title">Top Books</h2>
+        
+        <div class="books-grid" id="books">
+            </div>
+
+        <div class="load-more-section">
+            <button id="loadMoreBtn" class="btn btn-load-more">Load More Books</button>
+            <button class="btn btn-load-more" onclick="showFavorites()" style="margin-left: 1rem; background: #95a5a6;">View Liked Books</button>
+        </div>
+    </div>
+
+    <div id="favoritesModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">My Favorite Books (<span id="modalFavCount">0</span>)</h2>
+                <button class="close-btn" onclick="closeFavorites()">&times;</button>
+            </div>
+            <div id="favoritesGrid" class="books-grid"></div>
+            <div id="emptyFavorites">
+                <p>You haven't liked any books yet. Start exploring!</p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Bookaroo. Discover books, expand your mind.</p>
+    </footer>
+
+    <script>
+        // =====================================================================
+        // SECTION 1: DATA and STATE
+        // =====================================================================
+        
+        // FIXED: Using `tojson` filter to safely handle special characters
+        const allBooksData = [
+            {% for i in range(book_name|length) %}
+            {
+                index: {{ i }},
+                title: {{ book_name[i] | tojson }},
+                author: {{ author[i] | tojson }},
+                rating: "{{ rating[i] }}",
+                votes: "{{ votes[i] }}",
+                image: "{{ image[i] }}"
+            }{% if not loop.last %},{% endif %}
+            {% endfor %}
+        ];
+
+        let favorites = [];
+        let currentlyDisplayedCount = 0;
+        const booksPerPage = 12; // How many books to load at a time
+
+        // =====================================================================
+        // SECTION 2: INITIALIZATION
+        // =====================================================================
+
+        window.addEventListener('DOMContentLoaded', function() {
+            // Load the first batch of books
+            loadMoreBooks(); 
+            updateFavoritesCount();
+
+            // NEW: Add event listener for the "Load More" button
+            document.getElementById('loadMoreBtn').addEventListener('click', loadMoreBooks);
+        });
+
+        // =====================================================================
+        // SECTION 3: CORE LOGIC (Favorites & Loading)
+        // =====================================================================
+
+        function toggleFavorite(bookIndex) {
+            const book = allBooksData[bookIndex];
+            const existingIndex = favorites.findIndex(fav => fav.index === bookIndex);
+            
+            if (existingIndex === -1) {
+                favorites.push(book);
+            } else {
+                favorites.splice(existingIndex, 1);
+            }
+            
+            updateAllLikeButtons();
+            updateFavoritesCount();
+            
+            if (document.getElementById('favoritesModal').classList.contains('active')) {
+                renderFavorites();
+            }
+        }
+        
+        // NEW: "Load More Books" Functionality
+        function loadMoreBooks() {
+            const grid = document.getElementById('books');
+            const loadBtn = document.getElementById('loadMoreBtn');
+
+            const startIndex = currentlyDisplayedCount;
+            const endIndex = startIndex + booksPerPage;
+            
+            const newBooks = allBooksData.slice(startIndex, endIndex);
+
+            let booksHtml = newBooks.map(book => createBookCardHTML(book)).join('');
+            grid.insertAdjacentHTML('beforeend', booksHtml);
+
+            currentlyDisplayedCount += newBooks.length;
+
+            // Check if we have run out of books
+            if (currentlyDisplayedCount >= allBooksData.length) {
+                loadBtn.textContent = 'No More Books';
+                loadBtn.disabled = true;
+            }
+            
+            updateAllLikeButtons();
+        }
+
+        // =====================================================================
+        // SECTION 4: RENDERING & UI UPDATES
+        // =====================================================================
+
+        // NEW: Helper function to create HTML for a single book card
+        function createBookCardHTML(book) {
+            const isFav = favorites.some(fav => fav.index === book.index);
+            const heartIcon = isFav ? '💗' : '💜';
+            const buttonClass = isFav ? 'like-btn liked' : 'like-btn';
+            const buttonTitle = isFav ? 'Remove from favorites' : 'Add to favorites';
+
+            return `
+                <div class="book-card" data-book-index="${book.index}">
+                    <img src="${book.image}" alt="${book.title}" class="book-image" onerror="this.src='https://via.placeholder.com/180x250?text=No+Image'">
+                    <div class="book-info">
+                        <h3 class="book-title">${book.title}</h3>
+                        <p class="book-author">${book.author}</p>
+                        <div class="book-rating">
+                            <span>⭐ ${book.rating}</span>
+                            <span>${book.votes} votes</span>
+                        </div>
+                        <div class="book-actions">
+                            <button class="${buttonClass}" onclick="toggleFavorite(${book.index})" title="${buttonTitle}">
+                                ${heartIcon}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateAllLikeButtons() {
+            const cards = document.querySelectorAll('.book-card');
+            cards.forEach(card => {
+                const bookIndex = parseInt(card.dataset.bookIndex);
+                const likeBtn = card.querySelector('.like-btn');
+                if (!likeBtn) return;
+                
+                const isFavorite = favorites.some(fav => fav.index === bookIndex);
+                
+                if (isFavorite) {
+                    likeBtn.classList.add('liked');
+                    likeBtn.textContent = '💗';
+                    likeBtn.title = 'Remove from favorites';
+                } else {
+                    likeBtn.classList.remove('liked');
+                    likeBtn.textContent = '💜';
+                    likeBtn.title = 'Add to favorites';
+                }
+            });
+        }
+
+        function updateFavoritesCount() {
+            const count = favorites.length;
+            document.getElementById('favCount').textContent = count;
+            document.getElementById('modalFavCount').textContent = count;
+        }
+
+        function renderFavorites() {
+            const grid = document.getElementById('favoritesGrid');
+            const emptyState = document.getElementById('emptyFavorites');
+            
+            if (favorites.length === 0) {
+                grid.style.display = 'none';
+                grid.innerHTML = '';
+                emptyState.style.display = 'block';
+            } else {
+                grid.style.display = 'grid';
+                emptyState.style.display = 'none';
+                grid.innerHTML = favorites.map(book => createBookCardHTML(book)).join('');
+            }
+        }
+
+        // =====================================================================
+        // SECTION 5: MODAL CONTROLS
+        // =====================================================================
+
+        function showFavorites() {
+            document.getElementById('favoritesModal').classList.add('active');
+            renderFavorites();
+        }
+
+        function closeFavorites() {
+            document.getElementById('favoritesModal').classList.remove('active');
+        }
+
+        document.getElementById('favoritesModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeFavorites();
+            }
+        });
+    </script>
+</body>
+</html>
