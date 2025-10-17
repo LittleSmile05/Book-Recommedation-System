@@ -1,4 +1,42 @@
 # Book-Recommedation-System
+cat << 'EOF' > README.md
+# 📚 Bookaroo: Personalized Book Recommendation System
+
+A content-based and collaborative filtering model that recommends top books to users, allowing them to discover their next great read. The frontend is built with a dynamic UI to showcase the top books and manage user favorites.
+
+## ✨ Features
+
+* **Hybrid Recommendation Model:** Utilizes a combination of **Content-Based Filtering** (using book metadata) and **Collaborative Filtering** (using user ratings and similarity) to provide accurate and diverse recommendations.
+* **Top 50 Display:** Showcases the top 50 highly rated and most popular books on the landing page.
+* **Dynamic Favorites List:** Users can "like" books, which are stored in a session-based list and viewable in a dedicated modal.
+* **Paginated Loading:** Uses a "Load More" feature on the frontend to improve performance and user experience by loading books in batches.
+* **Interactive UI:** Modern and responsive design built with HTML, CSS, and basic JavaScript.
+
+---
+
+## 💻 Tech Stack
+
+| Component | Technology | Description |
+| :--- | :--- | :--- |
+| **Backend/Framework** | Python / Flask | Used for handling the web requests and serving the HTML. |
+| **Data Processing** | Pandas, NumPy | Essential libraries for cleaning, manipulating, and preparing the book data. |
+| **Recommendation Model** | Scikit-learn | Used for calculating **cosine similarity** and implementing the recommendation logic. |
+| **Frontend** | HTML5, CSS3, JavaScript (Vanilla) | Provides the interface, dynamic functionality (like/load), and modals. |
+
+---
+
+## 🚀 Getting Started
+
+Follow these steps to set up and run the project locally.
+
+### Prerequisites
+
+You need **Python** installed on your system.
+
+```bash
+# Verify your Python installation
+python --version
+
 
 # 1. Define variables for clarity
 REPO_URL="https://github.com/LittleSmile05/Book-Recommedation-System.git"
