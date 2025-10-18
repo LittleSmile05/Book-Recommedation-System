@@ -1,5 +1,3 @@
-# Book-Recommedation-System
-cat << 'EOF' > README.md
 # 📚 Bookaroo: Personalized Book Recommendation System
 
 A content-based and collaborative filtering model that recommends top books to users, allowing them to discover their next great read. The frontend is built with a dynamic UI to showcase the top books and manage user favorites.
